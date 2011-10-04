@@ -13,7 +13,7 @@ static char *convertHexToBin(char * input, int * bin_lenp) {
 		if (isspace(*input))
 			goto next;
 		switch(state) {
-			case FIRST_ZERO:
+			default: // FIRST_ZERO, make gcov happy
 				number = 0;
 				if (*input != '0')
 					goto done;
