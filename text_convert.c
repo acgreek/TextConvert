@@ -8,7 +8,7 @@ static char *convertHexToBin(char * input, int * bin_lenp) {
 	unsigned char number= 0;
 	int input_len=strlen(input);
 	
-	output_buf=malloc(input_len/3);
+	output_buf=malloc(input_len/3+1);
 	while (*input) {
 		if (isspace(*input))
 			goto next;
@@ -53,12 +53,14 @@ next:
 		input++;
 	}
 done:
+	output_buf[*bin_lenp] = 0x00;
+
 	return output_buf;
 }
 
 static char *convertBinToHex(char * binaryp, int bin_len) {
 	char * cur;
-	char * output_buf=malloc(bin_len);
+	char * output_buf=malloc(bin_len*5+1);
 	int hasOne = 0;
 	cur = output_buf;
 	while (bin_len) {
@@ -70,13 +72,15 @@ static char *convertBinToHex(char * binaryp, int bin_len) {
 	}
 	if (hasOne)
 		cur[-(1)]='\0';
+	else 
+		*cur='\0';
 	return output_buf;
 }
 static char *convertQpToBin(char * input, int *bin_lenp) {
 	char * cur;
 	char * output_buf;
 	int length = strlen(input); 
-	output_buf=malloc(length);
+	output_buf=malloc(length+1);
 	cur = output_buf;
 	while (*input!='\0') {
 		if (*input != '=') {
@@ -110,12 +114,29 @@ static char *convertQpToBin(char * input, int *bin_lenp) {
 	}
 	return output_buf;
 }
+static char *convertBinToQp(char * binaryp, int bin_len) {
+	char * cur;
+	char * output_buf=malloc(bin_len*3 +1);
+	cur = output_buf;
+	while (bin_len) {
+		if (isprint(*binaryp)) {
+			*cur = *binaryp;
+			cur++;	
+		}
+		else  {
+			sprintf(cur, "=%02X", (*binaryp)&0xff);
+			cur +=3;
+		}	
+		binaryp++;
+		bin_len--;
+	}
+	*cur='\0';
+	return output_buf;
+}
 char * convert_text(const char * input_type, const char * output_type, char * input ) {
 	char * binaryp= NULL; 
 	int bin_len=0;
 	char * outputp= NULL; 
-	if (0 == strcmp(input_type, output_type))
-		return strdup(input) ;
 	if (0 == strcmp(input_type, "qp")) {
 		binaryp = convertQpToBin(input, &bin_len);
 	}else if (0 == strcmp(input_type, "bin")) {
@@ -128,6 +149,9 @@ char * convert_text(const char * input_type, const char * output_type, char * in
 		outputp=  binaryp;
 	}else if (0 == strcmp(output_type, "hex")) {
 		outputp= convertBinToHex(binaryp, bin_len);
+		free(binaryp);
+	}else if (0 == strcmp(output_type, "qp")) {
+		outputp= convertBinToQp(binaryp, bin_len);
 		free(binaryp);
 	}else  {
 		free(binaryp);
