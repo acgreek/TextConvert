@@ -2,3 +2,13 @@ main
 text_convert.c
 text_convert.o
 html
+app.info
+gcov.css
+main.gcno
+main_cov
+main_cov.gcda
+main_cov.gcno
+main_cov.o
+text_convert_cov.gcda
+text_convert_cov.gcno
+text_convert_cov.o
