@@ -6,7 +6,6 @@
 char * convert_text(const char * input_type, const char * output_type, char * input );
 
 
-#define TEST(d,t1,t2,i,e) test (__FILE__, __LINE__,d, t1,t2, i,e )
 
 int test(char * filename, int line, char * descript, char * t1, char * t2, char *input, char * expect) {
 	char * resultp;
@@ -26,6 +25,8 @@ done:
 }
 
 int main(int argc, char * argv[]) {
+	int result =0;
+#define TEST(d,t1,t2,i,e) result = test (__FILE__, __LINE__,d, t1,t2, i,e )
 	TEST("test bin to hex", "bin", "hex", "\005\361\320","0x05 0xF1 0xD0");
 	TEST("test bin to bin", "bin", "bin", "\005\361\208", "\005\361\208");
 	TEST("test hex to hex", "hex", "hex", "0x05 0xF1 0xD0","0x05 0xF1 0xD0");
@@ -44,5 +45,6 @@ int main(int argc, char * argv[]) {
 	TEST("test hex to bin", "hex", "bin", "0x05 0xF1X", "\005\361");
 	TEST("test hex to qp", "hex", "qp", "0x05 0xF1F", "=05=F1");
 	TEST("test qp to hex", "qp", "hex", "=05=F1F=d0","0x05 0xF1 0x46 0xD0");
-	return 0;
+#undef TEST
+	return result;
 }
